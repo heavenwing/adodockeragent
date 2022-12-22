@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 RUN DEBIAN_FRONTEND=noninteractive apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
 
@@ -12,11 +12,19 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommend
     jq \
     lsb-release \
     software-properties-common \
+    wget \
     python3 \
     python3-pip \
     python3-venv
 
-# RUN curl -sL https://zygdemo.blob.core.chinacloudapi.cn/share/install-hrp.sh | bash
+# TODO: Workaround for devops agent not supporting OpenSSL 3.0
+# https://github.com/microsoft/azure-pipelines-agent/issues/3834#issuecomment-1160576447
+RUN curl -sL http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb > libssl1.1_1.1.0g-2ubuntu4_amd64.deb && \
+    DEBIAN_FRONTEND=noninteractive dpkg -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb && \
+    rm libssl1.1_1.1.0g-2ubuntu4_amd64.deb
+
+# https://github.com/microsoft/azure-pipelines-agent/issues/3834#issuecomment-1151874312
+RUN sed -i 's/openssl_conf = openssl_init/#openssl_conf = openssl_init/g' /etc/ssl/openssl.cnf
 
 RUN curl -ksSL https://httprunner.com/script/install.sh | bash
 
