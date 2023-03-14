@@ -9,7 +9,7 @@ RUN apt-get update && \
     # Feature-parity with node.js base images.
     apt-get install -y --no-install-recommends git openssh-client curl gpg && \
     # clean apt cache
-    rm -rf /var/lib/apt/lists/* && \
+    # rm -rf /var/lib/apt/lists/* && \
     # Create the pwuser
     adduser pwuser
 
@@ -19,7 +19,7 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 # 1. Add tip-of-tree Playwright package to install its browsers.
 #    The package should be built beforehand from tip-of-tree Playwright.
-COPY ./dist/* /tmp/
+#COPY ./dist/* /tmp/
 
 # 2. Bake in browsers & deps.
 #    Browsers will be downloaded in `/ms-playwright`.
@@ -29,13 +29,14 @@ RUN mkdir /ms-playwright && \
     mkdir /ms-playwright-agent && \
     cd /ms-playwright-agent && \
     dotnet new console && \
-    echo '<?xml version="1.0" encoding="utf-8"?><configuration><packageSources><add key="local" value="/tmp/"/></packageSources></configuration>' > nuget.config && \
-    dotnet add package Microsoft.Playwright --prerelease && \
+    #echo '<?xml version="1.0" encoding="utf-8"?><configuration><packageSources><add key="local" value="/tmp/"/></packageSources></configuration>' > nuget.config && \
+    # dotnet add package Microsoft.Playwright --prerelease && \
+    dotnet add package Microsoft.Playwright && \
     dotnet build && \
     ./bin/Debug/net7.0/playwright.ps1 install --with-deps && \
     ./bin/Debug/net7.0/playwright.ps1 mark-docker-image "${DOCKER_IMAGE_NAME_TEMPLATE}" && \
-    rm -rf /var/lib/apt/lists/* && \
-    rm -rf /tmp/* && \
+    # rm -rf /var/lib/apt/lists/* && \
+    # rm -rf /tmp/* && \
     rm -rf /ms-playwright-agent && \
     chmod -R 777 /ms-playwright
 
@@ -51,6 +52,8 @@ RUN apt-get install -y -qq --no-install-recommends \
     lsb-release \
     software-properties-common \
     wget
+
+RUN rm -rf /var/lib/apt/lists/*
 
 # NOTE: Workaround for devops agent not supporting OpenSSL 3.0
 # https://github.com/microsoft/azure-pipelines-agent/issues/3834#issuecomment-1160576447
