@@ -17,7 +17,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommend
     python3-pip \
     python3-venv
 
-# TODO: Workaround for devops agent not supporting OpenSSL 3.0
+# NOTE: Workaround for devops agent not supporting OpenSSL 3.0
 # https://github.com/microsoft/azure-pipelines-agent/issues/3834#issuecomment-1160576447
 RUN curl -sL http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb > libssl1.1_1.1.0g-2ubuntu4_amd64.deb && \
     DEBIAN_FRONTEND=noninteractive dpkg -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb && \
